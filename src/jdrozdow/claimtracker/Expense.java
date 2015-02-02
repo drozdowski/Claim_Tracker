@@ -62,4 +62,9 @@ public class Expense {
 		this.currency = currency;
 	}
 	
-}
+	public String toString() {
+			return name + " on " + date + " costing " + Float.toString(amount) + currency + ". Notes: " + description;
+		}
+	}
+	
+

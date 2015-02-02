@@ -31,6 +31,11 @@ public class Claim {
 		
 		this.items.remove(i);
 	}
+	
+	public ArrayList<Expense> getItems(){
+		return items;
+	}
+	
 	public String getName() {
 	
 		return name;
@@ -77,7 +82,9 @@ public class Claim {
 		return name + " : " + date_start + " - " + date_end + " with " + Integer.toString(length) + " expense(s).";
 	}
 	
+	//this method will get a total of all expenses in a claim
 	public String getTotal(){
+		
 		String total = "";
 		if (items.size() == 0){
 			return "None";

@@ -10,7 +10,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -19,20 +18,25 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 
 
 public class MainActivity extends Activity {
 
+	//this is the list of claims that will appear on the main screen
 	private ArrayList<Claim> claims = new ArrayList<Claim>();
+	//the following two variables are for saving/loading
 	private ArrayAdapter<String> claim_adapter;
 	private static final String FILENAME = "claims.sav";
-	protected Claim currentClaim = new Claim();
+	private Claim currentClaim = new Claim();
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,28 +47,28 @@ public class MainActivity extends Activity {
 
     //click New button on home screen
     public void change_newclaim_screen(View v) {
-    	setContentView(R.layout.newclaim);
+
+    	setContentView(R.layout.new_claim);
     	
     }
 
     //create new claim from form data
+    //this is only called when selecting "Done" on new claim screen
     public void new_claim(View v){
     	
     	Claim c = new Claim();
-    	EditText name;
-    	EditText description;
-    	EditText date_start;
-    	EditText date_end;
-    	name = (EditText)findViewById(R.id.new_claim_name);
-    	description = (EditText)findViewById(R.id.claim_description);
-    	date_start = (EditText)findViewById(R.id.claim_date_start);
-    	date_end = (EditText)findViewById(R.id.claim_date_end);
+    	EditText name = (EditText)findViewById(R.id.new_claim_name);
+    	EditText description = (EditText)findViewById(R.id.claim_description);
+    	EditText date_start = (EditText)findViewById(R.id.claim_date_start);
+    	EditText date_end = (EditText)findViewById(R.id.claim_date_end);
     	c.setName(name.getText().toString());
     	c.setDescription(description.getText().toString());
     	c.setDate_start(date_start.getText().toString());
     	c.setDate_end(date_end.getText().toString());
     	currentClaim = c;
     	claims.add(currentClaim);
+    	//return to main menu
+    	main_menu(v);
     }
     
     //return to main menu and represent/update claims in list
@@ -92,13 +96,54 @@ public class MainActivity extends Activity {
     	EditText date = (EditText)findViewById(R.id.expense_date);
     	Spinner currency = (Spinner)findViewById(R.id.currency_spinner);
     	EditText amount = (EditText)findViewById(R.id.expense_amount);
-    	
     	//calling the method in class Claim to add an Expense item
     	currentClaim.addItem(name.getText().toString(), date.getText().toString(),
     			description.getText().toString(), currency.getSelectedItem().toString(), Float.valueOf(amount.getText().toString())); 
-    	//and return to main menu
+    	//and return to edit/view claim screen
+    	edit_claim(v);
+    }
+    
+    //method represents expenses as a list and the claim data in editable fields
+    //called when View/Edit is selected in main menu or Done is selected in new expense
+    public void edit_claim(View v) {
+    	
+    	ArrayAdapter<Expense> expense_adapter = new ArrayAdapter<Expense>(this,
+    	        R.layout.expense_list, currentClaim.getItems()); 
+    	setContentView(R.layout.edit_claim);
+    	ListView listView = (ListView) findViewById(R.id.expense_list);
+    	listView.setAdapter(expense_adapter); 
+    	
+    	EditText name = (EditText)findViewById(R.id.new_claim_name);
+    	EditText description = (EditText)findViewById(R.id.claim_description);
+    	EditText date_start = (EditText)findViewById(R.id.claim_date_start);
+    	EditText date_end = (EditText)findViewById(R.id.claim_date_end);
+    	TextView total = (TextView)findViewById(R.id.total);
+    	
+    	name.setText(currentClaim.getName());
+    	description.setText(currentClaim.getDescription());
+    	date_start.setText(currentClaim.getDate_start());
+    	date_end.setText(currentClaim.getDate_end());
+    	total.setText(currentClaim.getTotal());
+    	
+    }
+    
+    //updates the data in current claim and returns to main menu
+    //called when "Done" is selected in edit claim view
+    public void update_claim(View v) {
+    	
+    	EditText name = (EditText)findViewById(R.id.new_claim_name);
+    	EditText description = (EditText)findViewById(R.id.claim_description);
+    	EditText date_start = (EditText)findViewById(R.id.claim_date_start);
+    	EditText date_end = (EditText)findViewById(R.id.claim_date_end);
+    	
+    	currentClaim.setName(name.getText().toString());
+    	currentClaim.setDescription(description.getText().toString());
+    	currentClaim.setDate_start(date_start.getText().toString());
+    	currentClaim.setDate_end(date_end.getText().toString());
     	main_menu(v);
     }
+    
+
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
